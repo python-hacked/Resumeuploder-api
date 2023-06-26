@@ -10,7 +10,9 @@ class ProfileView(APIView):
         serializer = ProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'msg': 'Resume Uploaded Successfully', 'status': 'success', 'candidate': serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({'msg': 'Resume Uploaded Successfully',
+                             'status': 'success', 'candidate': serializer.data},
+                            status=status.HTTP_201_CREATED)
         return Response(serializer.errors)
 
     def get(self, request, format=None):
@@ -20,7 +22,5 @@ class ProfileView(APIView):
 
     def delete(self, request, format=None):
         candidates = Profile.objects.all()
-        # serializer = ProfileSerializer.all()
+        # serializer = ProfileSerializer.objects.all()
         return Response({'status': 'success'})
-        
-        
