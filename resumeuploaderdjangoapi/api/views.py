@@ -24,3 +24,44 @@ class ProfileView(APIView):
         candidates = Profile.objects.all()
         # serializer = ProfileSerializer.objects.all()
         return Response({'status': 'success'})
+
+    def put(self, request, pk, format=None):
+        try:
+            profile = Profile.objects.get(pk=pk)
+        except Profile.DoesNotExist:
+            return Response({'msg': 'Profile not found', 'status': 'error'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Profile Updated Successfully',
+                             'status': 'success', 'candidate': serializer.data},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ProfileDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return Profile.objects.get(pk=pk)
+        except Profile.DoesNotExist:
+            return None
+
+    def get(self, request, pk, format=None):
+        profile = self.get_object(pk)
+        if profile is None:
+            return Response({'msg': 'Profile not found', 'status': 'error'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        profile = self.get_object(pk)
+        if profile is None:
+            return Response({'msg': 'Profile not found', 'status': 'error'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Profile Updated Successfully',
+                             'status': 'success', 'candidate': serializer.data},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
